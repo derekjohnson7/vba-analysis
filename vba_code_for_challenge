@@ -1,0 +1,123 @@
+Sub ticker():
+'create variable
+Dim close_price As Double
+Dim open_price As Double
+Dim yearly_change As Double
+Dim yearly_change_pct As Double
+Dim volume_ As Double
+Dim greatest_increase As Double
+Dim greatest_decrease As Double
+Dim greatest_volume As Double
+
+For Each ws In ThisWorkbook.Worksheets
+ws.Activate
+
+
+'labeling Columns And formatting
+    [I1] = "Ticker"
+    [J1] = "Yearly Change"
+    [K1] = "Percent Change"
+    [L1] = "Total Stock Volume"
+    
+    [O2] = "Greatest % Increase"
+    [O3] = "Greatest % Decrease"
+    [O4] = "Greatest Total Volume"
+    
+    [P1] = "Ticker"
+    [Q1] = "Value"
+    
+    Columns("I:Q").AutoFit
+    Columns("K:K").NumberFormat = "#.##%"
+    Cells(2, 17).NumberFormat = "#.##%"
+    Cells(3, 17).NumberFormat = "#.##%"
+    
+    
+    'establishing last row
+    last_Row = Cells(Rows.Count(), "A").End(xlUp).Row
+    j = 2
+    
+   
+   For i = 2 To last_Row
+    If Cells(i, "A") <> Cells(i + 1, "A") Then
+        Cells(j, "I") = Cells(i, "A")
+        
+        close_price = Cells(i, 6).Value
+        volume_ = volume_ + Cells(i, 7).Value
+        
+        yearly_change = close_price - open_price
+        Cells(j, "J").Value = yearly_change
+        
+        yearly_change_pct = yearly_change / open_price
+        Cells(j, "K") = yearly_change_pct
+        
+        Cells(j, "L") = volume_
+        j = j + 1
+        
+        
+        If yearly_change_pct > greatest_increase Then
+            greatest_increase = yearly_change_pct
+            Cells(2, "P") = Cells(i, 1)
+            Cells(2, "Q").Value = greatest_increase
+        End If
+        
+        If yearly_change_pct < greatest_decrease Then
+            greatest_decrease = yearly_change_pct
+            Cells(3, "P") = Cells(i, 1)
+            Cells(3, "Q").Value = greatest_decrease
+        End If
+        
+        If volume_ > greatest_volume Then
+            greatest_volume = volume_
+            Cells(4, "P") = Cells(i, 1)
+            Cells(4, "Q").Value = greatest_volume
+        End If
+        
+    
+    
+    ElseIf Cells(i, "A") <> Cells(i - 1, "A") Then
+        open_price = Cells(i, 3).Value
+        volume_ = Cells(i, 7).Value
+        
+        
+    Else
+    
+        volume_ = volume_ + Cells(i, 7).Value
+        
+        
+        
+    End If
+    
+   
+   Next i
+   
+   
+  Next ws
+  
+  
+
+End Sub
+
+Sub color_change():
+
+
+last_Row = Cells(Rows.Count(), "A").End(xlUp).Row
+
+For Each ws In ThisWorkbook.Worksheets
+ws.Activate
+   
+For i = 2 To last_Row
+    If Cells(i, 10) > 0 Then
+    Cells(i, 10).Interior.Color = RGB(0, 255, 0)
+    ElseIf Cells(i, 10) < 0 Then
+    Cells(i, 10).Interior.Color = RGB(255, 0, 0)
+    
+    End If
+    
+    Next i
+    
+  Next ws
+    
+    
+End Sub
+
+
